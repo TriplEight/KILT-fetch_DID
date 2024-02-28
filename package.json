@@ -1,0 +1,16 @@
+{
+  "name": "reset-did",
+  "version": "1",
+  "description": "Fetch KILT DID",
+  "main": "index.js",
+  "repository": "github.com/tripleight/KILT-fetch_DID",
+  "author": "Dudley",
+  "license": "MIT",
+  "private": "false",
+  "dependencies": {
+    "@kiltprotocol/sdk-js": "^0.35.0",
+    "dotenv": "^16.4.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
