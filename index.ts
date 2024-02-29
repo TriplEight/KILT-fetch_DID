@@ -49,9 +49,34 @@ export async function deleteDid(didUri: Kilt.DidUri, mnemonic: string) {
   await Kilt.Blockchain.signAndSubmitTx(didSignedDeletionExtrinsic, account);
 }
 
+export async function createW3name(didUri: Kilt.DidUri, mnemonic: string, w3name: string) {
+  const api = Kilt.ConfigService.get("api");
+  const authentication = generateKeypairs(mnemonic);
+  const account = generateAccount(mnemonic);
+  const didIdentifier = Kilt.Did.toChain(didUri);
+
+  const w3nCreationExtrinsic = api.tx.web3Names.claim(w3name);
+
+  const didSignedW3nCreationExtrinsic = await Kilt.Did.authorizeTx(
+    didUri,
+    w3nCreationExtrinsic,
+    async ({ data }) => ({
+      signature: authentication.sign(data),
+      keyType: authentication.type,
+    }),
+    account.address
+  );
+
+  await Kilt.Blockchain.signAndSubmitTx(didSignedW3nCreationExtrinsic, account);
+}
+
+// write a function to create a w3n
+
+
 async function main() {
   envConfig();
   const mnemonic = process.env.MNEMONIC;
+  const w3name = process.env.W3NAME;
   await Kilt.connect("wss://spiritnet.kilt.io");
   const { document, web3name } = await fetchDid(mnemonic!);
 
@@ -62,6 +87,7 @@ async function main() {
   }
 
   // await deleteDid(document.uri, mnemonic!)
+  await createW3name(document.uri, mnemonic!, w3name!);
 }
 
 main();
