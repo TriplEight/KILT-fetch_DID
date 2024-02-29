@@ -49,22 +49,42 @@ export async function deleteDid(didUri: Kilt.DidUri, mnemonic: string) {
   await Kilt.Blockchain.signAndSubmitTx(didSignedDeletionExtrinsic, account);
 }
 
-export async function createW3name(didUri: Kilt.DidUri, mnemonic: string, w3name: string) {
+export async function reclaimW3nameDeposit(didUri: Kilt.DidUri, mnemonic: string, w3name: string) {
   const api = Kilt.ConfigService.get("api");
   const authentication = generateKeypairs(mnemonic);
   const account = generateAccount(mnemonic);
 
-  const w3nCreationExtrinsic = api.tx.web3Names.claim(w3name);
+  const w3nReclaimDepositExtrinsic = api.tx.web3Names.reclaimDeposit(w3name);
 
-  const didSignedW3nCreationExtrinsic = await Kilt.Did.authorizeTx(
+  const didSignedW3nReclaimDepositExtrinsic = await Kilt.Did.authorizeTx(
     didUri,
-    w3nCreationExtrinsic,
+    w3nReclaimDepositExtrinsic,
     async ({ data }) => ({
       signature: authentication.sign(data),
       keyType: authentication.type,
     }),
     account.address
   );
+
+  await Kilt.Blockchain.signAndSubmitTx(didSignedW3nReclaimDepositExtrinsic, account);
+}
+
+  export async function createW3name(didUri: Kilt.DidUri, mnemonic: string, w3name: string) {
+    const api = Kilt.ConfigService.get("api");
+    const authentication = generateKeypairs(mnemonic);
+    const account = generateAccount(mnemonic);
+
+    const w3nCreationExtrinsic = api.tx.web3Names.claim(w3name);
+
+    const didSignedW3nCreationExtrinsic = await Kilt.Did.authorizeTx(
+      didUri,
+      w3nCreationExtrinsic,
+      async ({ data }) => ({
+        signature: authentication.sign(data),
+        keyType: authentication.type,
+      }),
+      account.address
+    );
 
   await Kilt.Blockchain.signAndSubmitTx(didSignedW3nCreationExtrinsic, account);
 }
@@ -83,7 +103,8 @@ async function main() {
   }
 
   // await deleteDid(document.uri, mnemonic!)
-  await createW3name(document.uri, mnemonic!, w3name!);
+  await reclaimW3nameDeposit(document.uri, mnemonic!, w3name!);
+  // await createW3name(document.uri, mnemonic!, w3name!);
 }
 
 main();
