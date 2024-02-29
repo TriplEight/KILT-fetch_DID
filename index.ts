@@ -53,7 +53,6 @@ export async function createW3name(didUri: Kilt.DidUri, mnemonic: string, w3name
   const api = Kilt.ConfigService.get("api");
   const authentication = generateKeypairs(mnemonic);
   const account = generateAccount(mnemonic);
-  const didIdentifier = Kilt.Did.toChain(didUri);
 
   const w3nCreationExtrinsic = api.tx.web3Names.claim(w3name);
 
@@ -69,9 +68,6 @@ export async function createW3name(didUri: Kilt.DidUri, mnemonic: string, w3name
 
   await Kilt.Blockchain.signAndSubmitTx(didSignedW3nCreationExtrinsic, account);
 }
-
-// write a function to create a w3n
-
 
 async function main() {
   envConfig();
